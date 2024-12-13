@@ -26,7 +26,9 @@ RUN \
     meson \
     libsamplerate-dev \
     libxml2-dev \
-    gtk+3.0-dev && \
+    gtk+3.0-dev \
+    cargo \
+    cargo-c && \
   apk add \
     numactl-dev \
     x264-dev \
@@ -40,19 +42,23 @@ RUN \
     speex-dev \
     libvpx-dev \
     libva-dev \
-    cargo \
     libturbojpeg
+
 RUN \
-  # Build HandBrake
+  # Download HandBrake Source
   git clone https://github.com/HandBrake/HandBrake.git && \
   cd HandBrake && \
-  git checkout refs/tags/$(git tag -l | grep -E '^1\.9\.[0-9]+$' | tail -n 1) && \
+  git checkout refs/tags/$(git tag -l | grep -E '^1\.9\.[0-9]+$' | tail -n 1) 
+
+# Build HandBrake
+RUN cd HandBrake && \
   ./configure --prefix=/usr \
     --disable-gtk \
+    --disable-nvenc \
+    --enable-libdovi \
     --enable-fdk-aac \
     --enable-x265 \
     --enable-numa \
-    --enable-nvenc \
     --enable-qsv \
     --enable-vce \
     --launch-jobs=$(nproc) \
